@@ -19,26 +19,30 @@ Create a Go program that sorts URLs from standard input or files, similar to the
 
 ## Sorting Criteria (in order)
 
-1. **Domain** (case-insensitive): Reverse domain components for sorting
-   - Example: `www.yahoo.com` sorts as `com.yahoo.www`
+1. **Domain** (case-insensitive): Reverse all domain components for sorting
+   - Example: `www.yahoo.com` sorts as `com.yahoo.www` (all components reversed)
+   - IP addresses (IPv4 and IPv6) are kept as-is (not reversed)
    - URLs without domains sort as empty domain
 
 2. **Port** (case-sensitive): After domain in sort order
+   - Sort ports numerically (e.g., 80 < 443 < 8080)
+   - Non-numeric port names (e.g., `:http`, `:https`) should be resolved to their numeric values via service name lookup and sorted as numbers
    - Use scheme-specific default ports if not specified:
      - `http` → `:80`
      - `https` → `:443`
      - `ftp` → `:21`
      - `ssh` → `:22`
      - `file` → no port (empty)
-     - Other schemes: use their standard default ports
+     - Other schemes: lookup and use their standard default ports (e.g., `ws` → `:80`, `wss` → `:443`)
 
 3. **Scheme** (case-insensitive): e.g., `http`, `https`, `ftp`
+   - URLs without schemes sort as having an empty scheme
 
 4. **Path** (case-sensitive): The URL path component
 
-5. **Query Args** (case-sensitive): Parse query string and sort individual parameters
-   - Example: `?b=2&a=1` should be sorted as `?a=1&b=2`
-   - Sort parameter names, then values if names are equal
+5. **Query String** (case-sensitive): Compare the query string as a whole
+   - Compare the entire query string component lexicographically
+   - Preserve original query string format in output (no normalization)
 
 6. **Fragment** (case-sensitive): The URL fragment component
 
@@ -46,6 +50,7 @@ Create a Go program that sorts URLs from standard input or files, similar to the
 
 - Handle invalid URLs gracefully and silently
 - For invalid URLs, sort as if missing components (empty values for missing parts)
+- Empty lines are treated as invalid URLs and sorted accordingly
 - Continue processing even if some URLs are invalid
 
 ## Requirements
