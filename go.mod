@@ -1,4 +1,4 @@
-module urlsort
+module github.com/fessyfoo/urlsort
 
 go 1.25.1
 
