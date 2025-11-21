@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -11,6 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/spf13/pflag"
 )
 
 // urlEntry holds the original URL string and its sort key components
@@ -40,15 +41,38 @@ var schemeDefaultPorts = map[string]int{
 	"file":  -1, // -1 means no port
 }
 
+func help() {
+	fmt.Fprint(os.Stderr, ""+
+		"urlsort - sorts URLs based on the  components of the url.\n\n"+
+
+		"Usage: urlsort [OPTIONS] [FILE...]\n\n"+
+
+		"Reads URLs from standard input or specified files, sorts them,\n"+
+		"and writes the output.\n\n"+
+
+		"sorts by domain, port, scheme, path, querystring, then fragment\n\n"+
+
+		"Options:\n",
+	)
+	pflag.PrintDefaults()
+	fmt.Fprint(os.Stderr, "\n")
+}
+
 func main() {
 	var outputFile string
-	flag.StringVar(&outputFile, "o", "", "write output to file")
-	flag.StringVar(&outputFile, "output-file", "", "write output to file")
-	flag.Parse()
+	var helpFlag bool
+	pflag.StringVarP(&outputFile, "output-file", "o", "", "write output to file")
+	pflag.BoolVarP(&helpFlag, "help", "h", false, "this help output")
+	pflag.Parse()
+
+	if helpFlag {
+		help()
+		os.Exit(0)
+	}
 
 	// Collect all input sources
 	var urls []string
-	args := flag.Args()
+	args := pflag.Args()
 
 	if len(args) == 0 {
 		// Read from stdin

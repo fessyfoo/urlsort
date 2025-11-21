@@ -1,6 +1,13 @@
 # urlsort
 
-A Go command-line tool that sorts URLs from standard input or files, similar to the Unix `sort` command.
+```bash
+cat urls.txt | urlssort 
+urlsort urls.txt ... 
+cat moreurls.txt | urlsort - urls.txt
+urlsort urls.txt -o sorted.txt 
+```
+
+sorts URLs using a multi-level comparison based on the  components of the url
 
 ## Installation
 
